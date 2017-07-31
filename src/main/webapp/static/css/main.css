@@ -1,0 +1,27 @@
+.mainWrap{
+	
+}
+.mainQuery{
+	margin-bottom: 0px;
+}
+.mainQuery-info{
+	padding: 5px;
+}
+.mainContent{
+	margin-bottom: 5px;
+}
+.mainContent-opt{
+	text-align: right;
+	margin-top: 5px;
+	margin-right: 5px;
+}
+.modefyTable{
+	font-size: 13px;
+}
+.mainPagination{
+	margin-bottom: 5px;
+}
+.paginationUl{
+	float: right;
+	margin: 0px;
+}

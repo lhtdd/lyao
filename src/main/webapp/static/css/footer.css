@@ -1,0 +1,16 @@
+.footerContent{
+	background-color: #b2ccb2;
+}
+.footerContent-ul{
+	list-style: none;
+	text-align: center;
+	padding-left: 0px;
+	margin-bottom: 0px;
+}
+.footerContent-ul li{
+	display: inline;
+	width: 100px;
+}
+.footerContent-ul li a{
+	color: #ffffff;
+}

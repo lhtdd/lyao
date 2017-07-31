@@ -1,0 +1,15 @@
+.navbarHeader{
+	background-color: #99CC99;
+	border-width: 0px;
+	-moz-border-radius: 0px;
+    -webkit-border-radius: 0px;
+    border-radius:0px;
+    margin-bottom: 0px;
+}
+.navbarTitle{
+	font-size: 24px;
+	color: #ffffff !important;
+}
+.navbarContent{
+	margin-right: 20px;
+}
