@@ -1,9 +1,9 @@
-package com.lyao.vo;
+package com.lyao.system.user.pojo.vo;
 
 public class L_rolemp {
 	private int id;
-	private String rolecode;
-	private int mpid;
+	private String roleid;
+	private int pid;
 	private String remark;
 	public void setId(int id){
 		this.id=id;
@@ -11,17 +11,17 @@ public class L_rolemp {
 	public int getId(){
 		return id;
 	}
-	public void setRolecode(String rolecode){
-		this.rolecode=rolecode;
+	public void setRoleid(String roleid){
+		this.roleid=roleid;
 	}
-	public String getRolecode(){
-		return rolecode;
+	public String getRoleid(){
+		return roleid;
 	}
-	public void setMpid(int mpid){
-		this.mpid=mpid;
+	public void setPid(int pid){
+		this.pid=pid;
 	}
-	public int getMpid(){
-		return mpid;
+	public int getPid(){
+		return pid;
 	}
 	public void setRemark(String remark){
 		this.remark=remark;

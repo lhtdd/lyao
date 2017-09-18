@@ -26,7 +26,7 @@
 						  <div class="form-group">
 						    <label for="username" class="col-md-2 control-label">用户名</label>
 						    <div class="col-md-10">
-						    	<input type="text" class="form-control" name="username" placeholder="邮箱/手机号" value="${username }">
+						    	<input type="text" class="form-control" name="username" placeholder="邮箱/手机号" value="${userName }">
 							</div>
 						  </div>
 						  <div class="form-group">
@@ -36,12 +36,18 @@
 						    </div>
 						  </div>
 						  <div class="form-group">
-						    <label for="password" class="col-md-2 control-label">验证码</label>
+						    <label for="captcha" class="col-md-2 control-label">验证码</label>
 						    <div class="col-md-10">
 						    	<input type="text" class="form-control" name="captcha">
 						    	<img src="Kaptcha.jpg" onclick="changeVerifyCode()" id="yzmImg" style="cursor: pointer;">
 	                     		<a href="javascript:void(0)" onclick="changeVerifyCode()">看不清，换一张</a>
 						    </div>
+						  </div>
+						  <div class="form-group">
+							  <div class="col-md-12">
+							      <input type="checkbox" class="" name="rememberMe" placeholder="记住我"> 
+							      <label for="rememberMe" class="">记住登录状态(24小时)</label>
+							  </div>
 						  </div>
 						  <button type="submit" class="btn btn-default">登录</button>
 						</form>

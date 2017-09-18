@@ -1,62 +1,110 @@
-<?xml version="1.0" encoding="UTF-8"?>  
-<beans xmlns="http://www.springframework.org/schema/beans"  
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  
-        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">  
-
-	<!-- 数据库保存的密码是使用MD5算法加密的，所以这里需要配置一个密码匹配对象  --> 
-	<bean id="credentialsMatcher" class="org.apache.shiro.authc.credential.Md5CredentialsMatcher"></bean>  
-	<!-- 自定义Realm类  -->  
-	<bean id="lyaoRealm" class="com.lyao.security.LyaoRealm">  
-	    <!-- <property name="userService" ref="userImpl"></property> -->
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+	<!-- 记住我 -->
+	<bean id="rememberMeCookie" class="org.apache.shiro.web.servlet.SimpleCookie">
+		<constructor-arg value="rememberMe" />
+		<property name="httpOnly" value="true" />
+		<property name="maxAge" value="86400" /><!-- 24小时 -->
 	</bean>
-	<!-- 缓存管理 -->  
-	<bean id="cacheManager" class="org.apache.shiro.cache.MemoryConstrainedCacheManager"></bean>
-	<!-- Shiro安全管理器 -->  
-	<bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">  
-	    <property name="realm" ref="lyaoRealm"></property>  
-	</bean>  
+	<!-- rememberMe管理器 -->
+	<bean id="rememberMeManager" class="org.apache.shiro.web.mgt.CookieRememberMeManager">
+		<property name="cipherKey"
+			value="#{T(org.apache.shiro.codec.Base64).decode('4AvVhmFLUs0KTA3Kprsdag==')}" />
+		<property name="cookie" ref="rememberMeCookie" />
+	</bean>
+	<!-- 会话管理器 -->
+	<!-- <bean id="sessionManager"
+		class="org.apache.shiro.web.session.mgt.DefaultWebSessionManager">
+		定义的是全局的session会话超时时间，此操作会覆盖web.xml文件中的超时时间配置
+		<property name="globalSessionTimeout" value="1000000" />
+		删除所有无效的Session对象，此时的session被保存在了内存里面
+		<property name="deleteInvalidSessions" value="true" />
+		定义要使用的无效的Session定时调度器
+		<property name="sessionValidationScheduler" ref="sessionValidationScheduler" />
+		需要让此session可以使用该定时调度器进行检测
+		<property name="sessionValidationSchedulerEnabled" value="true" />
+		定义Session可以进行序列化的工具类
+		<property name="sessionDAO" ref="sessionDAO" />
+		所有的session一定要将id设置到Cookie之中，需要提供有Cookie的操作模版
+		<property name="sessionIdCookie" ref="sessionIdCookie" />
+		定义sessionIdCookie模版可以进行操作的启用
+		<property name="sessionIdCookieEnabled" value="true" />
+	</bean> -->
+	<!-- 缓存管理器 使用Ehcache实现 -->
+	<bean id="cacheManager" class="org.apache.shiro.cache.ehcache.EhCacheManager">
+		<property name="cacheManagerConfigFile" value="classpath:ehcache.xml" />
+	</bean>
+	<!-- 登录密码加密校验 -->
+	<bean id="passwordMatcher" class="com.lyao.core.shiro.utils.LimitRetryHashedMatcher">
+		<property name="hashAlgorithmName" value="md5"></property>
+		<property name="hashIterations" value="2"></property>
+		<property name="storedCredentialsHexEncoded" value="true"></property>
+	</bean>
+	<!-- 自定义Realm类 -->
+	<bean id="lyaoRealm" class="com.lyao.core.shiro.realm.LyaoRealm">
+		<!-- 密码加密认证 -->
+		<property name="credentialsMatcher" ref="passwordMatcher"></property>
+		<property name="cachingEnabled" value="true" />
+		<property name="authenticationCachingEnabled" value="true" />
+		<property name="authenticationCacheName" value="authenticationCache" />
+		<property name="authorizationCachingEnabled" value="true" />
+		<property name="authorizationCacheName" value="authorizationCache" />
+	</bean>
+	<!-- Shiro安全管理器 -->
+	<bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+		<property name="realm" ref="lyaoRealm"></property>
+		<property name="rememberMeManager" ref="rememberMeManager"/>
+		<!-- <property name="sessionManager" ref="sessionManager"/> -->
+		<property name="cacheManager" ref="cacheManager" />
+	</bean>
 	<!-- 自定义表单拦截器实现检测验证码的功能 -->
-	<bean id="captchaFormAuthenticationFilter" class="com.lyao.security.CaptchaFormAuthenticationFilter"></bean>
-	<!--   
-	   Shiro主过滤器本身功能十分强大，其强大之处就在于它支持任何基于URL路径表达式的、自定义的过滤器的执行  
-	   Web应用中，Shiro可控制的Web请求必须经过Shiro主过滤器的拦截，Shiro对基于Spring的Web应用提供了完美的支持   
-	-->  
-	<bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">  
-	    <!-- Shiro的核心安全接口，这个属性是必须的 -->  
-	    <property name="securityManager" ref="securityManager"></property>  
-	    <!-- 要求登录时的链接(登录页面地址)，非必须的属性，默认会自动寻找Web工程根目录下的"/login.jsp"页面 -->  
-	    <property name="loginUrl" value="/login"></property>  
-	    <!-- 登录成功后要跳转的连接 -->  
-	    <property name="successUrl" value="/index" ></property>  
-	    <!-- 用户访问未对其授权的资源时，所显示的连接。此时用户必须登录后才起作用，未登录的(即未进行身份验证的则跳转到登录界面) -->  
-	    <property name="unauthorizedUrl" value="/login"></property> 
-	    <property name="filters">
-            <map>
-                <entry key="authc" value-ref="captchaFormAuthenticationFilter"/>
-                <!-- <entry key="">  
-                    <bean class="" />  
-                </entry>   -->
-            </map>
-        </property> 
-	    <property name="filterChainDefinitions">  
-	        <value>
-	            /Kaptcha.jpg=anon
-	            /static/**=anon
-	            /login=authc
-	            /**=user
-	        </value>  
-	    </property>  
-	</bean>  
-	
-	<!--   
-	   开启Shiro的注解(如@RequiresRoles，@RequiresPermissions)，需借助SpringAOP扫描使用Shiro注解的类，  
-	   并在必要时进行安全逻辑验证  
-	-->  
-	 
+	<bean id="captchaFormAuthenticationFilter" class="com.lyao.core.shiro.filters.CaptchaFormAuthenticationFilter"></bean>
+	<!-- Shiro主过滤器本身功能十分强大，其强大之处就在于它支持任何基于URL路径表达式的、自定义的过滤器的执行 Web应用中，Shiro可控制的Web请求必须经过Shiro主过滤器的拦截，Shiro对基于Spring的Web应用提供了完美的支持 -->
+	<bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+		<!-- Shiro的核心安全接口，这个属性是必须的 -->
+		<property name="securityManager" ref="securityManager"></property>
+		<!-- 要求登录时的链接(登录页面地址)，非必须的属性，默认会自动寻找Web工程根目录下的"/login.jsp"页面 -->
+		<!-- 此处地址应该与登录的form中action的地址一致。否则authc的拦截器将不起作用 -->
+		<property name="loginUrl" value="/login"></property>
+		<!-- 登录成功后要跳转的连接 -->
+		<property name="successUrl" value="/index"></property>
+		<!-- 用户访问未对其授权的资源时，所显示的连接。此时用户必须登录后才起作用，未登录的(即未进行身份验证的则跳转到登录界面) -->
+		<property name="unauthorizedUrl" value="/unAuthentication"></property>
+		<!-- 自定义过滤器 -->
+		<property name="filters">
+			<util:map>
+				<entry key="authc" value-ref="captchaFormAuthenticationFilter" />
+			</util:map>
+		</property>
+		<!-- 指定过滤器拦截的urlpatten -->
+		<!-- Shiro验证URL时,URL匹配成功便不再继续匹配查找(所以要注意配置文件中的URL顺序,尤其在使用通配符时)。 故filterChainDefinitions的配置顺序为自上而下,以最上面的为准 -->
+		<property name="filterChainDefinitions">
+			<value>
+				/Kaptcha.jpg=anon
+				/static/**=anon
+				/login=authc
+				/logout=logout
+				/**=user
+			</value>
+		</property>
+	</bean>
+
+	<!-- 开启Shiro的注解(如@RequiresRoles，@RequiresPermissions)，需借助SpringAOP扫描使用Shiro注解的类， 
+		并在必要时进行安全逻辑验证 -->
+
 	<bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"></bean>
-	<bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator" depends-on="lifecycleBeanPostProcessor"></bean>  
-	<bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">  
-	    <property name="securityManager" ref="securityManager"></property>  
-	</bean>  
-	  
+	<bean
+		class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"
+		depends-on="lifecycleBeanPostProcessor"></bean>
+	<bean
+		class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+		<property name="securityManager" ref="securityManager"></property>
+	</bean>
+
 </beans>  

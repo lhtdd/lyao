@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="L_userMapper">
+
+	<select id="selectUserByID" resultType="user" parameterType="Map">
+		select
+		*
+		from l_user
+		where userno = #{userNO}
+	</select>
+
+	<select id="selectRoleCodeByUserNO" resultType="String"
+		parameterType="Integer">
+		select
+		r.rolecode
+		from l_userrole as ur left join l_role as r on ur.roleid = r.id
+		where ur.userno = #{userNO}
+	</select>
+
+	<select id="selectPermissionCodeByUserNO" resultType="String"
+		parameterType="Integer">
+		SELECT
+		DISTINCT p.percode
+		FROM
+		l_userrole AS ur
+		INNER JOIN l_rolemp AS rp ON ur.roleid = rp.roleid
+		INNER JOIN l_permission AS p ON rp.pid = p.id
+		WHERE
+		ur.userno = #{userNO}
+	</select>
+
+</mapper>

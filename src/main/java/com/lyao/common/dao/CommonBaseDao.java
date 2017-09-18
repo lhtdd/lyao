@@ -1,4 +1,4 @@
-package com.lyao.dao;
+package com.lyao.common.dao;
 
 import java.util.List;
 

@@ -5,7 +5,11 @@
       <a class="navbar-brand navbarTitle" href="publicHtml/test.jsp">业务数据后台综合管理平台</a>
    </div>
    <div class="navbar-right navbarContent">
-      <p class="navbar-text">欢迎您：${userName }</p>
-      <button type="submit" class="btn btn-default navbar-btn">退出</button>
+      <shiro:user>
+      	欢迎<shiro:principal/> <a class="btn btn-default navbar-btn" href="${ctx}/logout">退出</a>
+      </shiro:user>
+      <shiro:guest>  
+	          欢迎游客访问，<a href="/">登录</a>  
+	  </shiro:guest>
    </div>
 </div>

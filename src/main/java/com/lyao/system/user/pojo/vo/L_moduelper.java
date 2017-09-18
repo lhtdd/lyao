@@ -1,4 +1,4 @@
-package com.lyao.vo;
+package com.lyao.system.user.pojo.vo;
 
 public class L_moduelper {
 	private int id;

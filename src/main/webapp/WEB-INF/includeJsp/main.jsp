@@ -27,10 +27,21 @@
 	<!-- 查询内容 -->
 	<div class="panel panel-default mainContent">
 	    <div class="mainContent-opt">
+	    <shiro:hasPermission name="system:user:create">
 			<button class="btn btn-default btn-xs" type="submit">增加</button>
+	    </shiro:hasPermission>
+	    <shiro:hasPermission name="system:user:update">
 			<button class="btn btn-default btn-xs" type="submit">编辑</button>
+	    </shiro:hasPermission>
+	    <shiro:hasPermission name="system:user:delete">
 			<button class="btn btn-default btn-xs" type="submit">删除</button>
+	    </shiro:hasPermission>
+	    <shiro:hasPermission name="system:user:view">
 			<button class="btn btn-default btn-xs" type="submit">查看</button>
+	    </shiro:hasPermission>
+	    <shiro:hasPermission name="order:a:update">
+			<button class="btn btn-default btn-xs" type="submit">打印</button>
+	    </shiro:hasPermission>
 	    </div>
 	    <div class="mainContent-table">
 		    <table class="table table-hover modefyTable">

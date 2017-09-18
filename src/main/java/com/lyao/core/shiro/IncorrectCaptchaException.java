@@ -1,4 +1,4 @@
-package com.lyao.security;
+package com.lyao.core.shiro;
 
 import org.apache.shiro.authc.AuthenticationException;
 

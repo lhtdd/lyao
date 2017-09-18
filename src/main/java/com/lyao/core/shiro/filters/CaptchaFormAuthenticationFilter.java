@@ -1,10 +1,11 @@
-package com.lyao.security;
+package com.lyao.core.shiro.filters;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.DisabledAccountException;
 import org.apache.shiro.authc.ExcessiveAttemptsException;
 import org.apache.shiro.authc.ExpiredCredentialsException;
@@ -14,6 +15,9 @@ import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.authc.FormAuthenticationFilter;
 import org.apache.shiro.web.util.WebUtils;
+
+import com.lyao.core.shiro.CaptchaUsernamePasswordToken;
+import com.lyao.core.shiro.IncorrectCaptchaException;
 
 public class CaptchaFormAuthenticationFilter extends FormAuthenticationFilter {
 
@@ -52,48 +56,38 @@ public class CaptchaFormAuthenticationFilter extends FormAuthenticationFilter {
 	      } 
 	   } 
 	   
-	   // 认证
-	   protected boolean executeLogin(ServletRequest request,ServletResponse response) throws Exception { 
+	   // 执行登录操作
+	   protected boolean executeLogin(ServletRequest request,ServletResponse response){ 
 	      CaptchaUsernamePasswordToken token = createToken(request, response); 
 	      String msg = null;
 	      try { 
 	         doCaptchaValidate((HttpServletRequest)request,token); 
 	         Subject subject = getSubject(request, response); 
 	         subject.login(token); 
+	         // 如果登录成功则返回false 即推出拦截器，不再向下执行。
 	         return onLoginSuccess(token, subject, request, response); 
 	      } catch (IncorrectCaptchaException e) {  
 	          msg = "验证码错误";
-	          request.setAttribute("msg", msg);
-	          return onLoginFailure(token, e, request, response); 
 	      } catch (IncorrectCredentialsException e) {  
 	          msg = "登录密码错误";  
-	          request.setAttribute("msg", msg);
-	          return onLoginFailure(token, e, request, response); 
 	      } catch (ExcessiveAttemptsException e) {  
 	          msg = "登录失败次数过多";  
-	          request.setAttribute("msg", msg);
-	          return onLoginFailure(token, e, request, response);
 	      } catch (LockedAccountException e) {  
 	          msg = "帐号已被锁定"; 
-	          request.setAttribute("msg", msg);
-	          return onLoginFailure(token, e, request, response);
 	      } catch (DisabledAccountException e) {  
 	          msg = "帐号已被禁用";  
-	          request.setAttribute("msg", msg);
-	          return onLoginFailure(token, e, request, response);
 	      } catch (ExpiredCredentialsException e) {  
 	          msg = "帐号已过期"; 
-	          request.setAttribute("msg", msg);
-	          return onLoginFailure(token, e, request, response);
 	      } catch (UnknownAccountException e) {  
 	          msg = "帐号不存在 "; 
-	          request.setAttribute("msg", msg);
-	          return onLoginFailure(token, e, request, response);
 	      } catch (AuthenticationException e) { 
 	    	  msg = "登录出错！";
-	    	  request.setAttribute("msg", msg);
-		      return onLoginFailure(token, e, request, response); 
-		  }
+		  } catch (Exception e) {
+			  msg = "异常！";
+		}
+	      request.setAttribute("msg", msg);
+	      // 如果登录失败，则继续向下执行。即走到action方法中
+          return true; 
 	   } 
 	   
 }

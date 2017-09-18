@@ -1,9 +1,9 @@
-package com.lyao.vo;
+package com.lyao.system.user.pojo.vo;
 
-public class L_userrole {
+public class L_role {
 	private int id;
-	private int userno;
 	private String rolecode;
+	private String rolename;
 	private String description;
 	public void setId(int id){
 		this.id=id;
@@ -11,17 +11,17 @@ public class L_userrole {
 	public int getId(){
 		return id;
 	}
-	public void setUserno(int userno){
-		this.userno=userno;
-	}
-	public int getUserno(){
-		return userno;
-	}
 	public void setRolecode(String rolecode){
 		this.rolecode=rolecode;
 	}
 	public String getRolecode(){
 		return rolecode;
+	}
+	public void setRolename(String rolename){
+		this.rolename=rolename;
+	}
+	public String getRolename(){
+		return rolename;
 	}
 	public void setDescription(String description){
 		this.description=description;

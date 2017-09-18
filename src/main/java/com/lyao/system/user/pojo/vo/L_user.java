@@ -1,10 +1,17 @@
-package com.lyao.vo;
+package com.lyao.system.user.pojo.vo;
 
-public class L_user {
+import java.io.Serializable;
+
+public class L_user implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int id;
 	private int userno;
 	private String name;
 	private String password;
+	private String salt;
 	private short status;
 	private String belongorg;
 	private String remark;
@@ -31,6 +38,12 @@ public class L_user {
 	}
 	public String getPassword(){
 		return password;
+	}
+	public String getSalt() {
+		return salt;
+	}
+	public void setSalt(String salt) {
+		this.salt = salt;
 	}
 	public void setStatus(short status){
 		this.status=status;

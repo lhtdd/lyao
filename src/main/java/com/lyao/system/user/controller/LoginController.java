@@ -1,18 +1,13 @@
-package com.lyao.controller;
-
-import java.util.HashMap;
-
-import javax.servlet.http.HttpServletRequest;
+package com.lyao.system.user.controller;
 
 import org.apache.log4j.Logger;
-import org.apache.shiro.web.util.WebUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.lyao.service.UserService;
+import com.lyao.common.service.UserService;
 
 @Controller
 public class LoginController {
@@ -20,8 +15,15 @@ public class LoginController {
 	private final Logger log = Logger.getLogger(LoginController.class);
 	@Autowired
 	private UserService userService;
-	@RequestMapping(value = "/login",method = RequestMethod.GET)  
-	public ModelAndView testLogin() { 
+	@RequestMapping(value = "/")  
+	public ModelAndView toLogin() { 
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("login");
+		return mv;  
+	} 
+	
+	@RequestMapping(value = "/login", method = RequestMethod.GET)  
+	public ModelAndView directLogin() { 
 		ModelAndView mv = new ModelAndView();
 		mv.setViewName("login");
 		return mv;  
@@ -35,21 +37,29 @@ public class LoginController {
 	 * @return
 	 */
 	@RequestMapping(value = "/login",method = RequestMethod.POST)  
-	public ModelAndView testLogin(HttpServletRequest request) {  
+	public ModelAndView login() {  
 	    ModelAndView mv = new ModelAndView();
-	    String userName = (String) request.getParameter("username");
-	    String msg = (String) request.getAttribute("msg");
-	    HashMap<String,String> modelMap = new HashMap<String,String>();
-	    modelMap.put("username", userName);
-	    modelMap.put("msg", msg);
-	    mv.addAllObjects(modelMap);
-	    mv.setViewName("login");
+    	mv.setViewName("login");
 	    return mv;  
 	} 
 	@RequestMapping(value = "/index")  
 	public ModelAndView goHome() { 
 		ModelAndView mv = new ModelAndView();
 		mv.setViewName("home");
+		return mv;  
+	} 
+	
+	@RequestMapping(value = "/unAuthentication")  
+	public ModelAndView goUnAuthentication() { 
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("unAuthentication");
+		return mv;  
+	} 
+	
+	@RequestMapping(value = "/logout", method = RequestMethod.GET)  
+	public ModelAndView logout() { 
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("login");
 		return mv;  
 	} 
 }
