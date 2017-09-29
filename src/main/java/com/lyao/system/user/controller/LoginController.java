@@ -1,5 +1,7 @@
 package com.lyao.system.user.controller;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -37,8 +39,10 @@ public class LoginController {
 	 * @return
 	 */
 	@RequestMapping(value = "/login",method = RequestMethod.POST)  
-	public ModelAndView login() {  
+	public ModelAndView login(HttpServletRequest request) {  
 	    ModelAndView mv = new ModelAndView();
+	    System.out.println(request.getHeader("Referer"));
+	    System.out.println(request.getServletPath());
     	mv.setViewName("login");
 	    return mv;  
 	} 
